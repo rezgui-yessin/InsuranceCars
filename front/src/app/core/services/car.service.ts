@@ -1,87 +1,57 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Car } from '../../shared/models/car.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarService {
-  private mockCars: Car[] = [
-    {
-      id: '1',
-      brand: 'Toyota',
-      model: 'Camry',
-      year: 2022,
-      plateNumber: 'ABC-1234',
-      vin: '1HGBH41JXMN109186',
-      clientId: '1',
-      clientName: 'John Doe',
-      imageUrl: 'assets/images/car1.png',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: '2',
-      brand: 'Honda',
-      model: 'Accord',
-      year: 2023,
-      plateNumber: 'XYZ-5678',
-      vin: '2HGBH41JXMN109187',
-      clientId: '1',
-      clientName: 'John Doe',
-      imageUrl: 'assets/images/car1.png',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ];
+  private apiUrl = `${environment.apiUrl}/cars`;
+  private clientUrl = `${environment.apiUrl}/client/cars`;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getCars(): Observable<Car[]> {
-    return of(this.mockCars).pipe(delay(500));
+    return this.http.get<Car[]>(this.apiUrl);
+  }
+  
+  getMyCars(): Observable<Car[]> {
+    return this.http.get<Car[]>(this.clientUrl);
   }
 
-  getCarById(id: string): Observable<Car | undefined> {
-    return of(this.mockCars.find(car => car.id === id)).pipe(delay(300));
+  getCarById(id: number): Observable<Car> {
+    return this.http.get<Car>(`${this.apiUrl}/${id}`);
   }
 
-  getCarsByClientId(clientId: string): Observable<Car[]> {
-    return of(this.mockCars.filter(car => car.clientId === clientId)).pipe(delay(500));
+  getCarsByClientId(clientId: number): Observable<Car[]> {
+     return this.http.get<Car[]>(this.apiUrl); // Placeholder until backend supports filter
   }
 
-  createCar(car: Partial<Car>): Observable<Car> {
-    const newCar: Car = {
-      id: Math.random().toString(36).substr(2, 9),
-      brand: car.brand || '',
-      model: car.model || '',
-      year: car.year || new Date().getFullYear(),
-      plateNumber: car.plateNumber || '',
-      vin: car.vin || '',
-      clientId: car.clientId || '',
-      clientName: car.clientName,
-      imageUrl: car.imageUrl,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.mockCars.push(newCar);
-    return of(newCar).pipe(delay(500));
-  }
-
-  updateCar(id: string, car: Partial<Car>): Observable<Car> {
-    const index = this.mockCars.findIndex(c => c.id === id);
-    if (index !== -1) {
-      this.mockCars[index] = { ...this.mockCars[index], ...car, updatedAt: new Date() };
-      return of(this.mockCars[index]).pipe(delay(500));
+  createCar(car: Car, imageFile?: File): Observable<Car> {
+    const formData = new FormData();
+    formData.append('car', JSON.stringify(car));
+    if (imageFile) {
+      formData.append('image', imageFile);
     }
-    throw new Error('Car not found');
+    return this.http.post<Car>(this.clientUrl, formData);
+  }
+  
+  createCarAdmin(car: Car, imageFile?: File): Observable<Car> {
+      const formData = new FormData();
+      formData.append('car', JSON.stringify(car));
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      return this.http.post<Car>(this.apiUrl, formData);
   }
 
-  deleteCar(id: string): Observable<boolean> {
-    const index = this.mockCars.findIndex(c => c.id === id);
-    if (index !== -1) {
-      this.mockCars.splice(index, 1);
-      return of(true).pipe(delay(500));
-    }
-    return of(false).pipe(delay(500));
+  updateCar(id: number, car: Car): Observable<Car> {
+    return this.http.put<Car>(`${this.apiUrl}/${id}`, car);
+  }
+
+  deleteCar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

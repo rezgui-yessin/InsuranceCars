@@ -7,22 +7,22 @@ export enum PaymentStatus {
 
 export enum PaymentMethod {
   CREDIT_CARD = 'CREDIT_CARD',
-  DEBIT_CARD = 'DEBIT_CARD',
   BANK_TRANSFER = 'BANK_TRANSFER',
-  PAYPAL = 'PAYPAL'
+  PAYPAL = 'PAYPAL',
+  CASH = 'CASH'
 }
 
 export interface Payment {
-  id: string;
-  invoiceNumber: string;
-  policyId: string;
-  policyNumber?: string;
-  clientId: string;
+  id: number;
+  policyId: number;
+  policyNumber: string;
+  clientId: number;
   clientName?: string;
   amount: number;
+  date: Date;
   status: PaymentStatus;
   method: PaymentMethod;
-  date: Date;
+  transactionId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

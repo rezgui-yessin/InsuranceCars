@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserRole } from '../../../shared/models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -33,12 +34,21 @@ import { AuthService } from '../../../core/services/auth.service';
                   
                   <div class="mb-3">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-control" formControlName="email" placeholder="john&#64;example.com">
+                    <input type="email" class="form-control" formControlName="email" placeholder="john@example.com">
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label">Phone Number</label>
                     <input type="tel" class="form-control" formControlName="phone" placeholder="+1 (555) 123-4567">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">I am a</label>
+                    <select class="form-select" formControlName="role">
+                      <option value="CLIENT">Client (Looking for Insurance)</option>
+                      <option value="AGENT">Agent (Selling Insurance)</option>
+                      <option value="ADMIN">Administrator</option>
+                    </select>
                   </div>
 
                   <div class="mb-3">
@@ -122,6 +132,7 @@ export class RegisterComponent {
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
+      role: ['CLIENT', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       terms: [false, Validators.requiredTrue]
@@ -132,9 +143,14 @@ export class RegisterComponent {
     if (this.registerForm.invalid) return;
 
     this.loading = true;
-    const { fullName, email, phone, password } = this.registerForm.value;
+    const { fullName, email, phone, password, role } = this.registerForm.value;
+    
+    // Split full name
+    const parts = fullName.trim().split(' ');
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(' ') || '';
 
-    this.authService.register({ fullName, email, phone }, password).subscribe({
+    this.authService.register({ firstName, lastName, email, phone, role } as any, password).subscribe({
       next: () => {
         alert('Registration successful! Please login.');
         this.router.navigate(['/auth/login']);

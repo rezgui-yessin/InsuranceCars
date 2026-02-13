@@ -1,13 +1,10 @@
 export interface Car {
-  id: string;
+  id: number;
   brand: string;
   model: string;
   year: number;
   plateNumber: string;
   vin: string;
-  clientId: string;
-  clientName?: string;
   imageUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  clientId: number;
 }

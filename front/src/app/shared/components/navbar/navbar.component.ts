@@ -24,19 +24,22 @@ import { User } from '../../models/user.model';
     </button>
     <div class="collapse navbar-collapse" [class.show]="!isCollapsed">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- Common Links (Visible to Everyone) -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/plans" routerLinkActive="active">Plans</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact</a>
+        </li>
+
+        <!-- Auth Buttons -->
         @if (!currentUser) {
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/plans" routerLinkActive="active">Plans</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact</a>
-          </li>
           <li class="nav-item">
             <a class="btn btn-primary ms-lg-3" routerLink="/auth/login">
               <i class="bi bi-box-arrow-in-right me-1"></i>
@@ -47,7 +50,7 @@ import { User } from '../../models/user.model';
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
               <i class="bi bi-person-circle me-1"></i>
-              {{ currentUser.fullName }}
+              {{ currentUser.firstName }} {{ currentUser.lastName }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" [routerLink]="[currentUser.role.toLowerCase(), 'dashboard']">

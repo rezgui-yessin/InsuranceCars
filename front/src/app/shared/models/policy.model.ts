@@ -12,19 +12,17 @@ export enum PolicyStatus {
 }
 
 export interface Policy {
-  id: string;
+  id: number;
   policyNumber: string;
-  clientId: string;
+  clientId: number;
   clientName?: string;
-  carId: string;
+  carId: number;
   carInfo?: string;
   type: PolicyType;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   price: number;
   status: PolicyStatus;
-  agentId?: string;
+  agentId?: number;
   agentName?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

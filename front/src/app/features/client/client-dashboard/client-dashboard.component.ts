@@ -71,7 +71,7 @@ export class ClientDashboardComponent implements OnInit {
     });
 
     // Load cars
-    this.carService.getCarsByClientId(this.currentUser.id).subscribe(cars => {
+    this.carService.getMyCars().subscribe(cars => {
       this.stats.totalCars = cars.length;
     });
   }

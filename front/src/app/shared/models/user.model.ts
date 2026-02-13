@@ -5,13 +5,14 @@ export enum UserRole {
 }
 
 export interface User {
-  id: string;
-  fullName: string;
+  id: number;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone: string;
-  address?: string;
+  phone?: string;
   role: UserRole;
+  address?: string;
   drivingLicense?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  agencyName?: string;
+  token?: string;
 }

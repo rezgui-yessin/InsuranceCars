@@ -1,99 +1,37 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
-import { Policy, PolicyType, PolicyStatus } from '../../shared/models/policy.model';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Policy } from '../../shared/models/policy.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PolicyService {
-  private mockPolicies: Policy[] = [
-    {
-      id: '1',
-      policyNumber: 'POL-2024-001',
-      clientId: '1',
-      clientName: 'John Doe',
-      carId: '1',
-      carInfo: 'Toyota Camry 2022',
-      type: PolicyType.PREMIUM,
-      startDate: new Date('2024-01-01'),
-      endDate: new Date('2025-01-01'),
-      price: 1200,
-      status: PolicyStatus.ACTIVE,
-      agentId: '2',
-      agentName: 'Jane Smith',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: '2',
-      policyNumber: 'POL-2024-002',
-      clientId: '1',
-      clientName: 'John Doe',
-      carId: '2',
-      carInfo: 'Honda Accord 2023',
-      type: PolicyType.FULL_COVERAGE,
-      startDate: new Date('2024-02-01'),
-      endDate: new Date('2025-02-01'),
-      price: 1800,
-      status: PolicyStatus.ACTIVE,
-      agentId: '2',
-      agentName: 'Jane Smith',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ];
+  private apiUrl = `${environment.apiUrl}/policies`;
+  private clientUrl = `${environment.apiUrl}/client/policies`;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getPolicies(): Observable<Policy[]> {
-    return of(this.mockPolicies).pipe(delay(500));
+    return this.http.get<Policy[]>(this.apiUrl);
+  }
+  
+  getMyPolicies(): Observable<Policy[]> {
+    return this.http.get<Policy[]>(this.clientUrl);
   }
 
-  getPolicyById(id: string): Observable<Policy | undefined> {
-    return of(this.mockPolicies.find(policy => policy.id === id)).pipe(delay(300));
+  getPolicyById(id: number): Observable<Policy> {
+    return this.http.get<Policy>(`${this.apiUrl}/${id}`);
   }
 
-  getPoliciesByClientId(clientId: string): Observable<Policy[]> {
-    return of(this.mockPolicies.filter(policy => policy.clientId === clientId)).pipe(delay(500));
+  getPoliciesByClientId(clientId: number): Observable<Policy[]> {
+     // NOTE: This assumes handling for the current user (Client Dashboard)
+     // A proper implementation for Admin would be: this.http.get(...) with query param
+     return this.getMyPolicies(); 
   }
 
   createPolicy(policy: Partial<Policy>): Observable<Policy> {
-    const newPolicy: Policy = {
-      id: Math.random().toString(36).substr(2, 9),
-      policyNumber: `POL-${new Date().getFullYear()}-${String(this.mockPolicies.length + 1).padStart(3, '0')}`,
-      clientId: policy.clientId || '',
-      clientName: policy.clientName,
-      carId: policy.carId || '',
-      carInfo: policy.carInfo,
-      type: policy.type || PolicyType.BASIC,
-      startDate: policy.startDate || new Date(),
-      endDate: policy.endDate || new Date(),
-      price: policy.price || 0,
-      status: policy.status || PolicyStatus.PENDING,
-      agentId: policy.agentId,
-      agentName: policy.agentName,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.mockPolicies.push(newPolicy);
-    return of(newPolicy).pipe(delay(500));
-  }
-
-  updatePolicy(id: string, policy: Partial<Policy>): Observable<Policy> {
-    const index = this.mockPolicies.findIndex(p => p.id === id);
-    if (index !== -1) {
-      this.mockPolicies[index] = { ...this.mockPolicies[index], ...policy, updatedAt: new Date() };
-      return of(this.mockPolicies[index]).pipe(delay(500));
-    }
-    throw new Error('Policy not found');
-  }
-
-  deletePolicy(id: string): Observable<boolean> {
-    const index = this.mockPolicies.findIndex(p => p.id === id);
-    if (index !== -1) {
-      this.mockPolicies.splice(index, 1);
-      return of(true).pipe(delay(500));
-    }
-    return of(false).pipe(delay(500));
+    return this.http.post<Policy>(this.clientUrl, policy);
   }
 }

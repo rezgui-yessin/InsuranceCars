@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { User, UserRole } from '../../shared/models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +10,9 @@ import { User, UserRole } from '../../shared/models/user.model';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private apiUrl = `${environment.apiUrl}/auth`;
 
-  constructor() {
-    // Check if user is already logged in
+  constructor(private http: HttpClient) {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
@@ -18,43 +20,30 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    // Mock login - replace with actual API call
-    const mockUser: User = {
-      id: '1',
-      fullName: 'John Doe',
-      email: email,
-      phone: '+1234567890',
-      address: '123 Main St',
-      role: this.getUserRoleFromEmail(email),
-      drivingLicense: 'DL123456',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    localStorage.setItem('currentUser', JSON.stringify(mockUser));
-    this.currentUserSubject.next(mockUser);
-    return of(mockUser);
+    return this.http.post<User>(`${this.apiUrl}/login`, { email, password }).pipe(
+      map(user => {
+        if (user && user.token) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('token', user.token);
+          this.currentUserSubject.next(user);
+        }
+        return user;
+      })
+    );
   }
 
   register(user: Partial<User>, password: string): Observable<User> {
-    // Mock registration - replace with actual API call
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      fullName: user.fullName || '',
-      email: user.email || '',
-      phone: user.phone || '',
-      address: user.address,
-      role: UserRole.CLIENT,
-      drivingLicense: user.drivingLicense,
-      createdAt: new Date(),
-      updatedAt: new Date()
+    const payload = {
+      ...user,
+      password,
+      role: user.role || UserRole.CLIENT
     };
-
-    return of(newUser);
+    return this.http.post<User>(`${this.apiUrl}/register`, payload);
   }
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
     this.currentUserSubject.next(null);
   }
 
@@ -63,7 +52,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.currentUserSubject.value !== null;
+    return !!this.currentUserSubject.value;
   }
 
   hasRole(role: UserRole): boolean {
@@ -71,10 +60,22 @@ export class AuthService {
     return user ? user.role === role : false;
   }
 
-  private getUserRoleFromEmail(email: string): UserRole {
-    // Mock role assignment based on email
-    if (email.includes('admin')) return UserRole.ADMIN;
-    if (email.includes('agent')) return UserRole.AGENT;
-    return UserRole.CLIENT;
+  updateProfile(user: Partial<User>): Observable<User> {
+    // Determine endpoint based on role or use generic client endpoint for now
+    // Assuming mostly Clients use this in this context
+    const role = this.getCurrentUser()?.role;
+    let endpoint = `${environment.apiUrl}/client/profile`; 
+    if (role === UserRole.ADMIN) endpoint = `${environment.apiUrl}/admin/profile`;
+    if (role === UserRole.AGENT) endpoint = `${environment.apiUrl}/agent/profile`;
+    
+    return this.http.put<User>(endpoint, user).pipe(
+        map(updatedUser => {
+            const currentUser = this.getCurrentUser();
+            const merged = { ...currentUser, ...updatedUser };
+            localStorage.setItem('currentUser', JSON.stringify(merged));
+            this.currentUserSubject.next(merged);
+            return merged;
+        })
+    );
   }
 }

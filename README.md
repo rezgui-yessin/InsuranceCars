@@ -24,13 +24,32 @@ Built with **Angular 18**.
 
 ---
 
-## 👥 User Roles & Features
+## 👥 Actors & Capabilities
 
-| Role | Key Features |
-| :--- | :--- |
-| **Admin** | Full system control. Manage users (clients/agents), view statistics, system settings, and generate reports. |
-| **Agent** | Manage assigned clients, create policies, approve/reject claims, and view commissions. |
-| **Client** | Buy/renew policies, submit/track claims, upload car photos, view payment history. |
+This system uses Role-Based Access Control (RBAC) to provide a tailored experience for each type of user.
+
+### 👤 Client (The Policyholder)
+The end-user looking to insure their vehicle.
+*   **Account Management**: Register, login, and update personal profile.
+*   **Vehicle Management**: Register new cars, upload car photos, and view vehicle details.
+*   **Policy Management**: Browse insurance plans (Basic, Premium, Full Coverage), purchase new policies, and view active/expired policies.
+*   **Claims Operations**: File new accident claims, upload incident photos/documents, and track claim status (Pending, Approved, Rejected).
+*   **Financials**: View payment history, download invoices, and check upcoming renewal dates.
+*   **Dashboard**: A personalized overview of cars, active policies, and pending actions.
+
+### 👔 Agent (The Broker)
+The intermediary who manages relationships and sales.
+*   **Client Management**: View list of assigned clients and their policy history.
+*   **Policy Operations**: Review and approve policy applications, create policies on behalf of clients.
+*   **Claims Processing**: Review claim submissions from assigned clients and provide initial assessments.
+*   **Performance Tracking**: Access a dedicated dashboard showing active policies count, pending tasks, and commission earnings.
+
+### 🛡️ Admin (The System Manager)
+The super-user with full control over the platform.
+*   **User Management**: Create, view, update, or delete Client and Agent accounts.
+*   **System Oversight**: Global view of all policies, claims, and consolidated financial transactions.
+*   **Reporting**: Access to system-wide statistics (Total Revenue, Active Users, Claim Ratios) and visual charts.
+*   **Configuration**: Manage system settings, define insurance plans, and set pricing rules.
 
 ---
 

@@ -7,18 +7,18 @@ export enum ClaimStatus {
 }
 
 export interface Claim {
-  id: string;
+  id: number;
   claimNumber: string;
-  policyId: string;
-  policyNumber?: string;
-  clientId: string;
+  policyId: number;
+  policyNumber: string;
+  clientId: number;
   clientName?: string;
   date: Date;
   description: string;
   status: ClaimStatus;
-  amount?: number;
-  documents: string[];
-  agentId?: string;
+  amount: number;
+  documents?: string[];
+  agentId?: number;
   agentName?: string;
   createdAt: Date;
   updatedAt: Date;
