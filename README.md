@@ -13,6 +13,7 @@ Built with **Java 17** and **Spring Boot 3**.
 *   **Core**: Spring Web, Spring Data JPA, Spring Security.
 *   **Database**: PostgreSQL.
 *   **Authentication**: JWT (JSON Web Tokens).
+*   **Payments**: Stripe Java SDK.
 *   **Documentation**: OpenAPI / Swagger UI.
 *   **Tooling**: Maven, Lombok.
 
@@ -20,6 +21,7 @@ Built with **Java 17** and **Spring Boot 3**.
 Built with **Angular 18**.
 *   **UI Framework**: Bootstrap 5 & Bootstrap Icons.
 *   **Architecture**: Standalone Components, Lazy Loading, Role-based Guards.
+*   **Payments**: ngx-stripe (Stripe Elements).
 *   **State Management**: RxJS services.
 
 ---
@@ -34,7 +36,7 @@ The end-user looking to insure their vehicle.
 *   **Vehicle Management**: Register new cars, upload car photos, and view vehicle details.
 *   **Policy Management**: Browse insurance plans (Basic, Premium, Full Coverage), purchase new policies, and view active/expired policies.
 *   **Claims Operations**: File new accident claims, upload incident photos/documents, and track claim status (Pending, Approved, Rejected).
-*   **Financials**: View payment history, download invoices, and check upcoming renewal dates.
+*   **Financials**: Pay premiums securely online via Stripe, view payment history, download invoices, and check upcoming renewal dates.
 *   **Dashboard**: A personalized overview of cars, active policies, and pending actions.
 
 ### 👔 Agent (The Broker)
@@ -65,6 +67,7 @@ Ensure you have the following installed:
 *   **PostgreSQL 14** or higher
 *   **Maven** (optional, wrapper is included)
 *   **Angular CLI** (`npm install -g @angular/cli`)
+*   **Stripe Account** (for Test Keys)
 
 ---
 
@@ -115,6 +118,29 @@ Ensure you have the following installed:
     ```
     *(Or `npm start`)*
 4.  Open your browser and navigate to **`http://localhost:4200`**.
+
+---
+
+### 5️⃣ Stripe Configuration
+
+To enable payments, you must configure Stripe keys for both the backend and frontend.
+
+#### Backend
+1.  Navigate to `backend/src/main/resources`.
+2.  Create a file named `application.properties` (or copy `.example`).
+3.  Add your **Secret Key** (`sk_test_...`) and **Publishable Key** (`pk_test_...`):
+    ```properties
+    stripe.api.key=sk_test_...
+    stripe.public.key=pk_test_...
+    ```
+
+#### Frontend
+1.  Open `front/src/app/app.config.ts`.
+2.  Find the `provideNgxStripe` function.
+3.  Replace the placeholder key with your **Publishable Key**:
+    ```typescript
+    provideNgxStripe('pk_test_...')
+    ```
 
 ---
 
