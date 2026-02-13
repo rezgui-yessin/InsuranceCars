@@ -1,0 +1,27 @@
+.dashboard-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .dashboard-content {
+    background-color: #f8f9fa;
+  }
+  
+  .stat-card {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .avatar-initial {
+    font-weight: 600;
+  }
+  
+  .table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+  }

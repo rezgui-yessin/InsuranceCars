@@ -25,7 +25,11 @@ export class PaymentService {
     return this.http.get<Payment>(`${this.apiUrl}/${id}`);
   }
 
+  createPaymentIntent(amount: number): Observable<{clientSecret: string}> {
+    return this.http.post<{clientSecret: string}>(`${this.apiUrl}/create-payment-intent`, { amount });
+  }
+
   processPayment(payment: Partial<Payment>): Observable<Payment> {
-    return this.http.post<Payment>(this.clientUrl, payment);
+    return this.http.post<Payment>(`${this.apiUrl}/confirm`, payment);
   }
 }

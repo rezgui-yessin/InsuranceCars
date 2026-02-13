@@ -9,6 +9,7 @@ import { CarService } from '../../core/services/car.service';
 import { PolicyService } from '../../core/services/policy.service';
 import { ClaimService } from '../../core/services/claim.service';
 import { PaymentService } from '../../core/services/payment.service';
+import { ToastService } from '../../core/services/toast.service';
 import { Car } from '../../shared/models/car.model';
 import { Policy, PolicyType, PolicyStatus } from '../../shared/models/policy.model';
 import { Claim, ClaimStatus } from '../../shared/models/claim.model';
@@ -90,7 +91,7 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   isEditing = false;
   
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private toastService: ToastService) {
     this.profileForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -114,16 +115,19 @@ export class ProfileComponent implements OnInit {
 
   onSubmit() {
     if (this.profileForm.valid) {
-      this.authService.updateProfile(this.profileForm.value).subscribe(() => {
-        this.isEditing = false;
-        alert('Profile updated successfully!');
+      this.authService.updateProfile(this.profileForm.value).subscribe({
+        next: () => {
+          this.isEditing = false;
+          this.toastService.success('Profile updated successfully!');
+        },
+        error: () => this.toastService.error('Failed to update profile.')
       });
     }
   }
 }
 
 @Component({
-  selector: 'app-client-cars',
+  selector: 'app-client-cars-deprecated',
   standalone: true,
   imports: [CommonModule, RouterModule, SidebarComponent, FormsModule, ReactiveFormsModule],
   template: `
@@ -189,7 +193,7 @@ export class ProfileComponent implements OnInit {
     </div>
   `
 })
-export class ClientCarsComponent implements OnInit {
+export class ClientCarsComponentDeprecated implements OnInit {
   sidebarItems = clientSidebarItems;
   cars$: Observable<Car[]>;
   showAddCarForm = false;
@@ -463,7 +467,12 @@ export class SubmitClaimComponent {
   policies$: Observable<Policy[]>;
   claimForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private policyService: PolicyService, private claimService: ClaimService) {
+  constructor(
+    private fb: FormBuilder, 
+    private policyService: PolicyService, 
+    private claimService: ClaimService,
+    private toastService: ToastService
+  ) {
     this.policies$ = this.policyService.getPolicies();
     this.claimForm = this.fb.group({
       policyId: ['', Validators.required],
@@ -474,10 +483,15 @@ export class SubmitClaimComponent {
   
   onSubmit() {
     if (this.claimForm.valid) {
-      this.claimService.createClaim(this.claimForm.value).subscribe(() => {
-        alert('Claim submitted successfully. We will review it shortly.');
-        this.claimForm.reset();
+      this.claimService.createClaim(this.claimForm.value).subscribe({
+        next: () => {
+          this.toastService.success('Claim submitted successfully. We will review it shortly.');
+          this.claimForm.reset();
+        },
+        error: () => this.toastService.error('Failed to submit claim.')
       });
+    } else {
+        this.toastService.error('Please complete the form.');
     }
   }
 }

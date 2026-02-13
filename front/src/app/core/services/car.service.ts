@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CarService {
   private apiUrl = `${environment.apiUrl}/cars`;
-  private clientUrl = `${environment.apiUrl}/client/cars`;
+  private clientUrl = `${environment.apiUrl}/cars`; // Corrected to point to existing endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -18,7 +18,9 @@ export class CarService {
   }
   
   getMyCars(): Observable<Car[]> {
-    return this.http.get<Car[]>(this.clientUrl);
+    // In a real app, backend might have a specific endpoint 'my-cars' or filter by token user
+    // For now, if /api/cars returns all cars, we might need to filter on frontend or assume backend handles it via security context
+    return this.http.get<Car[]>(this.apiUrl);
   }
 
   getCarById(id: number): Observable<Car> {

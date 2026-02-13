@@ -98,7 +98,7 @@ export const routes: Routes = [
       },
       {
         path: 'cars',
-        loadComponent: () => import('./features/client/client-placeholders').then(m => m.ClientCarsComponent)
+        loadComponent: () => import('./features/client/client-cars/client-cars.component').then(m => m.ClientCarsComponent)
       },
       {
         path: 'policies',
@@ -122,7 +122,7 @@ export const routes: Routes = [
       },
       {
         path: 'payments',
-        loadComponent: () => import('./features/client/client-placeholders').then(m => m.ClientPaymentsComponent)
+        loadComponent: () => import('./features/client/client-payments/client-payments.component').then(m => m.ClientPaymentsComponent)
       },
       {
         path: 'notifications',
@@ -140,7 +140,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/agent/agent-placeholders').then(m => m.AgentDashboardComponent)
+        loadComponent: () => import('./features/agent/agent-dashboard/agent-dashboard.component').then(m => m.AgentDashboardComponent)
       },
       {
         path: 'clients',

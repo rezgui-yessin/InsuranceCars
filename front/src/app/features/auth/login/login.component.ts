@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserRole } from '../../../shared/models/user.model';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,6 +33,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
+      this.toastService.error('Please fill in all required fields correctly.');
       return;
     }
 
@@ -41,6 +44,7 @@ export class LoginComponent {
 
     this.authService.login(email, password).subscribe({
       next: (user) => {
+        this.toastService.success('Login successful! Redirecting...');
         // Redirect based on role
         switch (user.role) {
           case UserRole.ADMIN:
@@ -59,6 +63,7 @@ export class LoginComponent {
       error: (err) => {
         this.error = 'Invalid email or password';
         this.loading = false;
+        this.toastService.error(this.error);
       }
     });
   }
